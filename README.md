@@ -1,2 +1,3 @@
 # sm-ext-TransmitManager
-Easy hook for entity transmit.
+
+Easy hook for entity transmit
