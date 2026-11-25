@@ -22,8 +22,6 @@ public:
 	void Hook_SetTransmit(CCheckTransmitInfo* pInfo, bool bAlways);
 
 	void HookEntity(CBaseEntity* pEntity);
-
-private:
 	void UnhookEntity(int index);
 };
 
