@@ -226,11 +226,13 @@ void TransmitManager::SDK_OnUnload()
         g_pSDKHooks->RemoveEntityListener(this);
     }
 
+    // SourceMod unloads the plugins using our natives after this: leave no freed pointer behind.
     for (auto i = 0; i < MAX_EDICTS; i++)
     {
         if (g_Hooked[i] != nullptr)
         {
             delete g_Hooked[i];
+            g_Hooked[i] = nullptr;
         }
     }
 }
@@ -416,10 +418,9 @@ static cell_t Native_RemoveEntHooks(IPluginContext* pContext, const cell_t* para
         return pContext->ThrowNativeError("Entity %d is invalid.", index);
     }
 
-    if (g_Hooked[index] != nullptr)
-    {
-        delete g_Hooked[index];
-    }
+    // UnhookEntity also clears the slot: a freed pointer left there was deleted again
+    // when the entity was destroyed or hooked again, and read by the other natives.
+    g_Transmit.UnhookEntity(index);
 
     return 0;
 }
