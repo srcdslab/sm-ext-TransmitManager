@@ -278,13 +278,8 @@ void TransmitManager::OnClientPutInServer(int client)
 
 void TransmitManager::OnClientDisconnecting(int client)
 {
-    auto* pPlayer = playerhelpers->GetGamePlayer(client);
-    if (!pPlayer || pPlayer->IsSourceTV() || pPlayer->IsReplay() || !pPlayer->IsInGame())
-    {
-        // not in-game = no hook
-        return;
-    }
-
+    // Player slots are skipped by OnEntityDestroyed, so this is the only place their
+    // hook goes away, SourceTV and replay included. UnhookEntity ignores unhooked slots.
     UnhookEntity(client);
 }
 
@@ -343,7 +338,7 @@ static cell_t Native_SetEntityOwner(IPluginContext* pContext, const cell_t* para
         return true;
     }
 
-    if (params[1] >= 1 && params[1] < playerhelpers->GetMaxClients())
+    if (params[1] >= 1 && params[1] <= playerhelpers->GetMaxClients())
     {
         smutils->LogError(myself, "Entity %d is not being hook.", params[1]);
         return false;
@@ -372,7 +367,7 @@ static cell_t Native_SetEntityState(IPluginContext* pContext, const cell_t* para
         return true;
     }
 
-    if (params[1] >= 1 && params[1] < playerhelpers->GetMaxClients())
+    if (params[1] >= 1 && params[1] <= playerhelpers->GetMaxClients())
     {
         smutils->LogError(myself, "Entity %d is not being hook.", params[1]);
         return false;
